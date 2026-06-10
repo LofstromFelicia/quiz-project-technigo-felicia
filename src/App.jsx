@@ -42,6 +42,12 @@ export const App = () => {
 
   const currentQuestion = quizData.questions[currentStep]
 
+  // counting % for progress bar 
+  const totalQuestions = quizData.questions.length
+  const progressPercentage = typeof currentStep === "number"
+    ? Math.round(((currentStep + 1) / totalQuestions) * 100)
+    : currentStep === "summary" ? 100 : 0
+
   return (
     <div className="quiz-container">
       {/* INTRO/STARTPAGE */}
@@ -63,7 +69,57 @@ export const App = () => {
 
           <div className="input-container">
             {/* Map of Input to next step */}
-            <p style={{ color: "#aaa" }}>Inputs för typen "{currentQuestion.type}" kommer här...</p>
+            {currentQuestion.type === "radio" && (
+              <div className="radio-group">
+                {currentQuestion.options.map((option) => (
+                  <label key={option.value} className="radio-label">
+                    <input
+                      type="radio"
+                      name={currentQuestion.id}
+                      value={option.value}
+                      checked={answers[currentQuestion.id] === option.value}
+                      onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                    />
+                    {option.label}
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {currentQuestion.type === "select" && (
+              <div className="select-group">
+                <select
+                  value={answers[currentQuestion.id]}
+                  onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                >
+                  <option value="">-- Välj ett alternativ --</option>
+                  {currentQuestion.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {currentQuestion.type === "range" && (
+              <div className="range-group">
+                <div className="range-labels">
+                  <span>{currentQuestion.labels.min}</span>
+                  <span>{currentQuestion.labels.max}</span>
+                </div>
+                <input
+                  type="range"
+                  min={currentQuestion.min}
+                  max={currentQuestion.max}
+                  value={answers[currentQuestion.id]}
+                  onChange={(e) => handleAnswerChange(currentQuestion.id, Number(e.target.value))}
+                />
+                <div className="range-current-value">
+                  Valt värde: <strong>{answers[currentQuestion.id]}</strong>
+                </div>
+              </div>
+            )}
           </div>
 
           <button onClick={handleNextStep} className="next-btn">
@@ -79,9 +135,25 @@ export const App = () => {
           <p>Här är en sammanfattning av dina val:</p>
 
           <div className="results-list">
-            <p><strong>Miljö:</strong> {answers.environment || "Inget valt"}</p>
-            <p><strong>Verktyg:</strong> {answers.weapon || "Inget valt"}</p>
-            <p><strong>Kaos-energi:</strong> {answers.chaos} / 10</p>
+            <p>
+              <strong>Miljö:</strong>{" "}
+              {answers.environment === "forest" && "I djupa, tysta och mossbeklädda urskogar"}
+              {answers.environment === "sea" && "På stormiga hav bland piskande vågor"}
+              {answers.environment === "mountain" && "Uppe på höga, karga och snötäckta fjälltoppar"}
+              {answers.environment === "hall" && "I en livlig, fackelupplyst gästabudssal"}
+              {answers.environment || "Inget valt"}
+            </p>
+            <p>
+              <strong>Verktyg:</strong>{" "}
+              {answers.weapon === "hammer" && "Råstyrka och en tung hammare (Mjölnir)"}
+              {answers.weapon === "spear" && "Visdom, strategi och ett träffsäkert spjut (Gungner)"}
+              {answers.weapon === "wit" && "List, illusioner och snabba ordväxlingar"}
+              {answers.weapon === "magic" && "Uråldrig magi, intuition och naturens krafter"}
+              {answers.weapon || "Inget valt"}
+            </p>
+            <p>
+              <strong>Kaos-energi:</strong> <span>{answers.chaos} av 10</span>
+            </p>
           </div>
 
           <button onClick={handleRestart} className="restart-btn">Gör testet igen!</button>
