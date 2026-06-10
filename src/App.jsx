@@ -48,6 +48,58 @@ export const App = () => {
     ? Math.round(((currentStep + 1) / totalQuestions) * 100)
     : currentStep === "summary" ? 100 : 0
 
+  // Function for get creature result 
+  const getVasenResult = () => {
+    const { environment, weapon, chaos } = answers
+
+    // Loke (high chaos-energy + list or gästabudssal)
+    if (chaos >= 7 || weapon === "wit") {
+      return {
+        name: "Loke",
+        image: "/loki.jpg",
+        wikiUrl: "https://sv.wikipedia.org/wiki/Loke",
+        desc: "Du är listig, oförutsägbar och full av kaos-energi! Precis som Loke använder du din skärpa och dina ord för att vända situationer till din fördel. Ingen vet riktigt var de har dig, men tråkigt blir det aldrig."
+      }
+    }
+
+    // Tor (Strength, hammer, stormy seas or mountains)
+    if (weapon === "hammer" || environment === "sea" || environment === "mountain") {
+      return {
+        name: "Tor",
+        image: "/tor.jpg",
+        wikiUrl: "https://sv.wikipedia.org/wiki/Tor",
+        desc: "Du är fylld av råstyrka, lojalitet och mod! Som asaguden Tor möter du utmaningar med huvudet först och backar aldrig för en storm. Du skyddar dina nära och kära med allt du har."
+      }
+    }
+    // Oden (Wisdom, strategy, deep woods)
+    if (weapon === "spear" || environment === "forest") {
+      if (weapon === "magic") {
+        // Skogsrået (Magic + forest)
+        return {
+          name: "Ett Skogsrå",
+          image: "/skogsra.png",
+          wikiUrl: "https://sv.wikipedia.org/wiki/Skogsr%C3%A5et",
+          desc: "Du är mystisk, bunden till naturen och besitter en uråldrig intuition. Liksom Skogsrået trivs du bäst i det dolda, vaktar dina hemligheter noga och har en magisk dragningskraft som fascinerar andra."
+        }
+      }
+      return {
+        name: "Oden",
+        image: "/odin.jpg",
+        wikiUrl: "https://sv.wikipedia.org/wiki/Oden",
+        desc: "Du är vis, strategisk och ständigt på jakt efter kunskap. Som Allfader Oden offrar du gärna det lilla för att förstå det stora hela. Du talar när det behövs och leder andra med din mentala styrka."
+      }
+    }
+    // fallback if no match perfectly 
+    return {
+      name: "Ett uråldrigt väsen",
+      image: "/urandligt.jpg",
+      wikiUrl: "https://sv.wikipedia.org/wiki/Nordisk_mytologi",
+      desc: "Du har en unik blandning av egenskaper från gamla tiders myter. Du är svårfångad, balanserad och bär på krafter som ännu inte har visat sitt fulla ansikte för världen."
+    }
+  }
+
+  const vasen = getVasenResult();
+
   return (
     <div className="quiz-container">
       {/* INTRO/STARTPAGE */}
@@ -62,8 +114,17 @@ export const App = () => {
       {/* FRÅGOR */}
       {typeof currentStep === "number" && (
         <div className="step-card question-card">
+
+          {/* Visual Progress Bar */}
+          <div className="progress-bar-container">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
+          </div>
+
           {/* Indicator of how far you are into the quiz*/}
-          <span className="progress-text">Fråga {currentStep + 1} av {quizData.questions.length}</span>
+          <span className="progress-text">Steg {currentStep + 1} av {quizData.questions.length} ({progressPercentage}%)</span>
 
           <h2>{currentQuestion.question}</h2>
 
@@ -131,10 +192,35 @@ export const App = () => {
       {/* RESULTS */}
       {currentStep === "summary" && (
         <div className="step-card summary-card">
-          <h2>Ditt sanna väsen har avslöjats!</h2>
-          <p>Här är en sammanfattning av dina val:</p>
+          <span style={{ color: "#dfb15b", fontSize: "1.2rem", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "2px" }}>Ditt sanna inre avslöjas...</span>
+
+          <h1 style={{ marginTop: "10px", fontSize: "3rem" }}>{vasen.name}</h1>
+
+          <div style={{ width: "100%", borderRadius: "8px", margin: "20px 0", border: "1px solid #334252", backgroundColor: "#151b24" }}>
+            <img
+              src={vasen.image}
+              alt={vasen.name}
+              style={{ width: "100%", height: "100%", maxHeight: "400px", objectFit: "contain", display: "block" }}
+            />
+          </div>
+
+          <p className="vasen-desc" style={{ fontStyle: "italic", color: "#e2e8f0", marginBottom: "40px" }}>
+            "{vasen.desc}"
+          </p>
+
+          <div style={{ marginBottom: "30px" }}>
+            <a
+              href={vasen.wikiUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#dfb15b", textDecoration: "underline", fontSize: "1rem", fontWeight: "500" }}
+            >
+              Läs mer om {vasen.name} på Wikipedia ↗
+            </a>
+          </div>
 
           <div className="results-list">
+            <h3 style={{ color: "#dfb15b", marginBottom: "15px", fontSize: "1.1rem" }}>Dina gjorda val under vandringen:</h3>
             <p>
               <strong>Miljö:</strong>{" "}
               {answers.environment === "forest" && "I djupa, tysta och mossbeklädda urskogar"}
@@ -156,7 +242,7 @@ export const App = () => {
             </p>
           </div>
 
-          <button onClick={handleRestart} className="restart-btn">Gör testet igen!</button>
+          <button onClick={handleRestart} className="restart-btn">Vandra igen!</button>
         </div>
       )}
     </div>
