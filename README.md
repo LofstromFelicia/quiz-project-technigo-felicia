@@ -3,7 +3,7 @@
 An interactive and atmospheric quiz built with React and Vite. Users navigate through a series of mystical questions to reveal which Norse god or mythological creature hides within their inner self.
 
 ## View it live
-🔗 [Check out the live project here!](INSERT_YOUR_NETLIFY_OR_VERCEL_LINK_HERE)
+🔗 [Check out the live project here!](https://quiz-project-technigo-felicia.pages.dev)
 
 ---
 
